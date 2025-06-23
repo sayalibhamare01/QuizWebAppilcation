@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - Code Quiz</title>
+    <link rel="stylesheet" href="/adminCreateQuizz.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128&family=Libre+Barcode+39&family=Noto+Sans+JP:wght@100..900&family=Oswald:wght@200..700&family=Yatra+One&display=swap"
+      rel="stylesheet"
+    />
+</head>
+<body>
+    <div class="container">
+        <nav class="vertical-navbar">
+            <div class="nav-header">
+                <h2 class="nav-title">Code Quiz</h2>
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <div class="nav-content">
+                <ul class="nav-links">
+                    <li><a href="/admin/dashboard" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>All Users</a></li>
+                    <li><a href="/admin/allQuizzes" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>All Quizzes</a></li>
+                    <li><a href="/admin/adminCreateQuizPage" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>Create Quiz</a></li>
+                    <li><button class="nav-link logout-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>Logout</button></li>
+                </ul>
+            </div>
+        </nav>
+        <main class="main-content">
+            <div class="form-container">
+            <h1>Create a New Quiz</h1>
+            <form id="quizForm" action="/createquizz" method="POST">
+                <div class="form-group">
+                    <label for="title">Quiz Title</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="difficulty">Difficulty</label>
+                    <select id="difficulty" name="difficulty">
+                        <option value="Beginner level">Beginner level</option>
+                        <option value="Intermediate level" selected>Intermediate level</option>
+                        <option value="Expert level">Expert level</option>
+                    </select>
+                </div>
+            
+                <div class="form-group">
+                    <label for="imageurl">Image URL</label>
+                    <input type="url" id="imageurl" name="imageurl">
+                </div>
+            
+            <div class="form-group">
+              <label for="language">Programming Language</label>
+              <select id="language" name="language" required>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Python">Python</option>
+                <option value="Java">Java</option>
+                <option value="C++">C++</option>
+                <option value="Ruby">Ruby</option>
+                <option value="Kotlin">Kotlin</option>
+                <option value="React">React</option>
+                <option value="HTML">HTML</option>
+                <option value="CSS">CSS</option>
+                <option value="SQL">SQL</option>
+                <option value="PHP">PHP</option>
+                <option value="C#">C#</option>
+              </select>
+            </div>
+            
+                <div id="questions">
+                    <h2>Questions</h2>
+                </div>
+            
+                <button type="button" id="addQuestion" class="btn-secondary">Add Question</button>
+                <input type="hidden" name="creator" value="Codingal">
+                <button type="submit" class="btn-primary">Create Quiz</button>
+            </form>
+            </div>
+        </main>
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navContent = document.querySelector('.nav-content');
+
+    // Add active class to current page in navbar
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === window.location.pathname) {
+            link.classList.add('active');
+        }
+    });
+
+    const logoutBtn = document.querySelector('.logout-btn');
+    logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleLogout();
+    });
+
+    function handleLogout() {
+        fetch('/logout', {
+            method: 'POST',
+            credentials: 'same-origin'
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/quizzes';
+                }
+            })
+            .catch(error => console.error('Logout error:', error));
+        }
+
+    // Mobile menu toggle
+    menuToggle.addEventListener('click', function() {
+        navContent.classList.toggle('show');
+        this.classList.toggle('active');
+        
+        // Animate hamburger to X
+        const spans = this.querySelectorAll('span');
+        spans[0].classList.toggle('rotate-45');
+        spans[1].classList.toggle('opacity-0');
+        spans[2].classList.toggle('-rotate-45');
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        const isClickInsideNav = navContent.contains(e.target) || menuToggle.contains(e.target);
+        if (!isClickInsideNav && navContent.classList.contains('show')) {
+            navContent.classList.remove('show');
+            menuToggle.classList.remove('active');
+            
+            // Reset hamburger animation
+            const spans = menuToggle.querySelectorAll('span');
+            spans[0].classList.remove('rotate-45');
+            spans[1].classList.remove('opacity-0');
+            spans[2].classList.remove('-rotate-45');
+        }
+    });
+
+    // Close mobile menu when window is resized to desktop size
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && navContent.classList.contains('show')) {
+            navContent.classList.remove('show');
+            menuToggle.classList.remove('active');
+            
+            // Reset hamburger animation
+            const spans = menuToggle.querySelectorAll('span');
+            spans[0].classList.remove('rotate-45');
+            spans[1].classList.remove('opacity-0');
+            spans[2].classList.remove('-rotate-45');
+        }
+    });
+
+
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quizForm');
+            const addQuestionBtn = document.getElementById('addQuestion');
+            const questionsContainer = document.getElementById('questions');
+            let questionCount = 0;
+
+            addQuestionBtn.addEventListener('click', addQuestion);
+            form.addEventListener('submit', handleSubmit);
+
+            function addQuestion() {
+                questionCount++;
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.innerHTML = `
+                    <h3>Question ${questionCount}</h3>
+                    <div class="form-group">
+                        <label for="question${questionCount}">Question</label>
+                        <input type="text" id="question${questionCount}" name="questions[${questionCount-1}][question]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Answers</label>
+                        <div class="answer-group">
+                            <input type="text" name="questions[${questionCount-1}][answers][]" required>
+                            <input type="radio" name="questions[${questionCount-1}][correct]" value="0" required>
+                        </div>
+                        <div class="answer-group">
+                            <input type="text" name="questions[${questionCount-1}][answers][]" required>
+                            <input type="radio" name="questions[${questionCount-1}][correct]" value="1" required>
+                        </div>
+                        <div class="answer-group">
+                            <input type="text" name="questions[${questionCount-1}][answers][]" required>
+                            <input type="radio" name="questions[${questionCount-1}][correct]" value="2" required>
+                        </div>
+                        <div class="answer-group">
+                            <input type="text" name="questions[${questionCount-1}][answers][]" required>
+                            <input type="radio" name="questions[${questionCount-1}][correct]" value="3" required>
+                        </div>
+                    </div>
+                    <button type="button" class="remove-question">Remove Question</button>
+                `;
+                questionsContainer.appendChild(questionDiv);
+
+                const removeBtn = questionDiv.querySelector('.remove-question');
+                removeBtn.addEventListener('click', () => {
+                    questionsContainer.removeChild(questionDiv);
+                    updateQuestionNumbers();
+                });
+            }
+
+            function updateQuestionNumbers() {
+                const questions = questionsContainer.querySelectorAll('.question');
+                questions.forEach((question, index) => {
+                    const heading = question.querySelector('h3');
+                    heading.textContent = `Question ${index + 1}`;
+                    const inputs = question.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        const name = input.getAttribute('name');
+                        if (name) {
+                            input.setAttribute('name', name.replace(/\d+/, index));
+                        }
+                    });
+                });
+                questionCount = questions.length;
+            }
+
+            function handleSubmit(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const quizData = {
+                    title: formData.get('title'),
+                    numQuestions: questionCount,
+                    difficulty: formData.get('difficulty'),
+                    imageurl: formData.get('imageurl'),
+                    language: formData.get('language'),
+                    quizData: [],
+                    creator: formData.get('creator')
+                };
+
+                for (let i = 0; i < questionCount; i++) {
+                    const question = formData.get(`questions[${i}][question]`);
+                    if (question) {
+                        const answers = formData.getAll(`questions[${i}][answers][]`);
+                        const correct = parseInt(formData.get(`questions[${i}][correct]`));
+                        quizData.quizData.push({
+                            question,
+                            answers,
+                            correct
+                        });
+                    }
+                }
+
+                fetch('/admin/adminCreateQuiz', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(quizData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Quiz created successfully') {
+                        alert('Quiz created successfully!');
+                        form.reset();
+                        questionsContainer.innerHTML = '';
+                        questionCount = 0;
+                    } else {
+                        alert('Failed to create quiz');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while creating the quiz');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

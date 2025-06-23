@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= quizzTitle %></title>
+    <link rel="stylesheet" href="/quizArena.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <button id="exit-quiz" class="exit-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6L6 18"></path>
+                    <path d="M6 6l12 12"></path>
+                </svg>
+            </button>
+            <h1><%= quizzTitle %></h1>
+            <div id="stopwatch">00:00</div>
+        </div>
+        <div class="quiz-content">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div id="question" class="question"></div>
+            <div id="answers" class="answers"></div>
+        </div>
+        <div class="quiz-footer">
+            <button id="prev-btn" class="control-btn" disabled>Previous</button>
+            <button id="next-btn" class="control-btn">Next</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script>
+        const quizData = <%- JSON.stringify(quizData) %>;
+        let currentQuestion = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let startTime;
+        let questionStartTime;
+        let timerInterval;
+        let questionTimes = new Array(quizData.length).fill(0);
+
+        const questionEl = document.getElementById("question");
+        const answersEl = document.getElementById("answers");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const resultEl = document.getElementById("result");
+        const progressEl = document.getElementById("progress");
+        const stopwatchEl = document.getElementById("stopwatch");
+        const confettiContainer = document.getElementById("confetti-container");
+        const exitBtn = document.getElementById("exit-quiz");
+
+        // Initialize the quiz
+        function initializeQuiz() {
+            // Ensure elements are visible
+            questionEl.style.display = "block";
+            answersEl.style.display = "grid";
+            
+            // Load the first question immediately
+            const firstQuestion = quizData[0];
+            questionEl.textContent = `1. ${firstQuestion.question}`;
+            
+            // Create answer buttons for first question
+            answersEl.innerHTML = "";
+            firstQuestion.answers.forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.textContent = answer;
+                button.classList.add("answer-btn");
+                button.addEventListener("click", () => selectAnswer(index));
+                answersEl.appendChild(button);
+            });
+
+            // Set initial button states
+            prevBtn.disabled = true;
+            nextBtn.textContent = "Next";
+            
+            // Start the timer
+            startStopwatch();
+            
+            // Set initial progress
+            updateProgress();
+            
+            questionStartTime = Date.now();
+        }
+
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            
+            // Update question text
+            questionEl.textContent = `${currentQuestion + 1}. ${question.question}`;
+            
+            // Clear and recreate answer buttons
+            answersEl.innerHTML = "";
+            question.answers.forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.textContent = answer;
+                button.classList.add("answer-btn");
+                if (userAnswers[currentQuestion] === index) {
+                    button.classList.add("selected");
+                }
+                button.addEventListener("click", () => selectAnswer(index));
+                answersEl.appendChild(button);
+            });
+
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.textContent = currentQuestion === quizData.length - 1 ? "Finish" : "Next";
+
+            // Update progress
+            updateProgress();
+            questionStartTime = Date.now();
+        }
+
+        function selectAnswer(index) {
+            userAnswers[currentQuestion] = index;
+            questionTimes[currentQuestion] = Math.floor((Date.now() - questionStartTime) / 1000);
+            
+            // Update button states
+            const buttons = answersEl.querySelectorAll('.answer-btn');
+            buttons.forEach(button => button.classList.remove('selected'));
+            buttons[index].classList.add('selected');
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            progressEl.style.width = `${progress}%`;
+        }
+
+        function showResult() {
+            clearInterval(timerInterval);
+            const totalTime = formatTime(Math.floor((Date.now() - startTime) / 1000));
+            const score = userAnswers.reduce((sum, answer, index) => {
+                return answer === quizData[index].correct ? sum + 1 : sum;
+            }, 0);
+
+            // Hide quiz content and footer
+            document.querySelector('.quiz-content').style.display = 'none';
+            document.querySelector('.quiz-footer').style.display = 'none';
+
+            // Check if user is logged in
+            const isAuthenticated = <%= isAuthenticated %>;
+            
+            // Get quiz data from server
+            const quiz = <%- JSON.stringify(quiz || {}) %>;
+            console.log('Quiz data:', quiz); // Debug log
+
+            let reviewHTML = `
+                <div class="result-container">
+                    <div class="result-header">
+                        <button onclick="window.location.href='/quizzes'" class="back-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Back to Quizzes
+                        </button>
+                    </div>
+                    <h2>Quiz Completed!</h2>
+                    <div class="result-summary">
+                        <p>Your score: <span class="score">${score}</span> out of ${quizData.length}</p>
+                        <p>Total time: <span class="score">${totalTime}</span></p>
+                    </div>`;
+
+            if (!isAuthenticated) {
+                reviewHTML += `
+                    <div class="login-prompt">
+                        <p>Want to save your score and track your progress?</p>
+                        <button onclick="window.location.href='/login'" class="control-btn">Login Now</button>
+                    </div>`;
+            } else {
+                // Save score if user is logged in
+                saveQuizResult(score, totalTime);
+            }
+
+            // Add scoreboard section
+            if (quiz && quiz.scores && quiz.scores.length > 0) {
+                console.log('Scores available:', quiz.scores.length); // Debug log
+                reviewHTML += `
+                    <div class="scoreboard">
+                        <h3>Top Scores</h3>
+                        <div class="score-list">
+                            ${quiz.scores
+                                .sort((a, b) => b.score - a.score || 
+                                    parseFloat(a.timeTaken) - parseFloat(b.timeTaken))
+                                .slice(0, 5)
+                                .map((score, index) => `
+                                    <div class="score-item">
+                                        <span class="rank">#${index + 1}</span>
+                                        <span class="player-name">${score.userName}</span>
+                                        <span class="player-score">${score.score}/${quizData.length}</span>
+                                        <span class="player-time">${score.timeTaken}</span>
+                                    </div>
+                                `).join('')}
+                        </div>
+                    </div>`;
+            } else {
+                console.log('No scores available'); // Debug log
+                reviewHTML += `
+                    <div class="scoreboard">
+                        <h3>Top Scores</h3>
+                        <p class="no-scores">No scores yet. Be the first to complete this quiz!</p>
+                    </div>`;
+            }
+
+            // Add question review section
+            reviewHTML += `
+                <h3>Detailed Review:</h3>
+                <div class="review-list">`;
+
+            quizData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                reviewHTML += `
+                    <div class="review-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <h4>Question ${index + 1}:</h4>
+                        <p>${question.question}</p>
+                        <p>Your answer: <span class="user-answer">${question.answers[userAnswer]}</span></p>
+                        <p>Correct answer: <span class="correct-answer">${question.answers[question.correct]}</span></p>
+                        <p>Time taken: ${formatTime(questionTimes[index])}</p>
+                    </div>
+                `;
+            });
+
+            reviewHTML += `
+                    </div>
+                    <div class="scoreboard">
+                        <h3>Top Scores</h3>
+                        <div class="score-list">
+                            ${quiz.scores
+                                .sort((a, b) => b.score - a.score || 
+                                    parseFloat(a.timeTaken) - parseFloat(b.timeTaken))
+                                .slice(0, 5)
+                                .map((score, index) => `
+                                    <div class="score-item">
+                                        <span class="rank">#${index + 1}</span>
+                                        <span class="player-name">${score.userName}</span>
+                                        <span class="player-score">${score.score}/${quizData.length}</span>
+                                        <span class="player-time">${score.timeTaken}</span>
+                                    </div>
+                                `).join('')}
+                        </div>
+                    </div>
+                    <div class="result-actions">
+                        <button class="control-btn restart-btn" onclick="restartQuiz()">Restart Quiz</button>
+                    </div>
+                </div>
+            `;
+
+            resultEl.innerHTML = reviewHTML;
+            createConfetti();
+            animateReviewItems();
+        }
+
+        async function saveQuizResult(score, totalTime) {
+            try {
+                const response = await fetch('/quizzes/save-result', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        quizId: '<%= quizId %>',
+                        score: score,
+                        timeTaken: totalTime
+                    })
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to save quiz result');
+                }
+            } catch (error) {
+                console.error('Error saving quiz result:', error);
+            }
+        }
+
+        function createConfetti() {
+            // Clear any existing confetti
+            confettiContainer.innerHTML = '';
+            
+            // Create new confetti pieces
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Randomize starting positions
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = (Math.random() * 3 + 4) + 's'; // Random duration between 4-7s
+                
+                // Randomize size
+                const size = Math.random() * 5 + 5; // Random size between 5-10px
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                
+                confettiContainer.appendChild(confetti);
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff9800', '#ffd180', '#ffab40', '#ffa000', '#ff6d00'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function restartQuiz() {
+            // Show quiz content and footer
+            document.querySelector('.quiz-content').style.display = 'block';
+            document.querySelector('.quiz-footer').style.display = 'flex';
+            
+            currentQuestion = 0;
+            userAnswers = new Array(quizData.length).fill(null);
+            questionTimes = new Array(quizData.length).fill(0);
+            resultEl.innerHTML = "";
+            confettiContainer.innerHTML = "";
+            startStopwatch();
+            loadQuestion();
+        }
+
+        function startStopwatch() {
+            startTime = Date.now();
+            questionStartTime = Date.now();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateStopwatch, 1000);
+        }
+
+        function updateStopwatch() {
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            stopwatchEl.textContent = formatTime(elapsedTime);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        prevBtn.addEventListener("click", () => {
+            if (currentQuestion > 0) {
+                questionTimes[currentQuestion] += Math.floor((Date.now() - questionStartTime) / 1000);
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        nextBtn.addEventListener("click", () => {
+            questionTimes[currentQuestion] += Math.floor((Date.now() - questionStartTime) / 1000);
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        });
+
+        exitBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to exit the quiz? Your progress will be lost.")) {
+                window.location.href = "/quizzes";
+            }
+        });
+
+        // Initialize the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
+
+        // Add animation delays to review items
+        function animateReviewItems() {
+            document.querySelectorAll('.review-item').forEach((item, index) => {
+                item.style.setProperty('--item-index', index);
+            });
+        }
+    </script>
+</body>
+</html>
+

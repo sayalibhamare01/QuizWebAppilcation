@@ -1,0 +1,723 @@
+body{
+    background-color: #F3F4F7;
+  }
+  
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    }
+  
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background-color: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+  
+    .nav-left,
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+  
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  
+    .logo {
+      height: 32px;
+      width: auto;
+    }
+  
+    .brand-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ff5c35;
+    }
+  
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+  
+    .nav-item {
+      position: relative;
+    }
+  
+    .nav-link {
+      text-decoration: none;
+      color: #4a4a4a;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+  
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 2px;
+      background-color: #ff5c35;
+      transition: width 0.3s ease;
+    }
+  
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+  
+    .nav-link:hover, 
+    .nav-link.active {
+      color: #ff5c35;
+    }
+  
+    .auth-buttons {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+  
+    .btn-login {
+      color: #4a4a4a;
+      background: none;
+      border: none;
+    }
+  
+    .btn-login:hover {
+      color: #ff5c35;
+    }
+  
+  
+    .btn-SignUp {
+      background-color: #ff5c35;
+      color: white;
+      border: none;
+    }
+  
+    .btn-SignUp:hover {
+      background-color: #fc704d;
+      color: #333;
+    }
+  
+    .btn-logout{
+      background-color: #ff5c35;
+      color: white;
+      border: none;
+    }
+  
+    .btn-logout:hover{
+      background-color: #fc704d;
+      color: #333;
+    }
+  
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: white;
+      z-index: 2000;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+  
+    .mobile-menu.active {
+      display: block;
+    }
+  
+    .mobile-menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+  
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+  
+    .mobile-nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+  
+    .mobile-user-icon{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-start;
+      font-size: 18px;
+      font-weight: 600;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 4px;
+      color: white;
+      margin-bottom: 2rem;
+    }
+  
+    .mobile-nav-link {
+      text-decoration: none;
+      color: #333;
+      font-size: 1.125rem;
+      font-weight: 500;
+    }
+  
+    .mobile-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: auto;
+    }
+  
+    .btn-Login {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: none;
+      color: #333;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  
+    .btn-mobile-SignUp {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #ff5c35;
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  
+    .btn-mobile-logout{
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #ff5c35;
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  
+    @media (max-width: 1024px) {
+      .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        margin-left: auto; /* Pushes the button to the right */
+      }
+  
+      .nav-left {
+        flex: 1; /* Ensures space between the left and right sides */
+      }
+  
+      .nav-links,
+      .auth-buttons,
+      .user-icon {
+        display: none;
+      }
+    }
+  
+  
+  .QuizList{
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      gap: 50px;
+      padding-top: 80px;
+      padding-bottom: 40px;
+  }
+  
+  .user-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 2rem;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 230px;
+    padding: 8px 0;
+  }
+  
+  .user-menu.active {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  .user-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .user-email {
+    width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .user-menu-item:hover {
+    background-color: #f7f7f7;
+  }
+  
+  .user-menu-item svg {
+    margin-right: 12px;
+    color: #666;
+  }
+  
+  .user-menu-item.logout {
+    border-top: 1px solid #eee;
+    margin-top: 8px;
+    padding-top: 12px;
+  }
+  
+  .user-menu-item.logout,
+  .user-menu-item.logout svg {
+    color: #ff5c35;
+  }
+  
+  .user-menu-item.logout:hover {
+    background-color: #fff0ed;
+  }
+  
+  @media (max-width: 1024px) {
+    .user-menu {
+        display: none !important;
+    }
+  }
+  
+  /* Improve the user icon styles */
+  .user-icon {
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .user-circle-icon {
+    color: #4a4a4a;
+    transition: color 0.2s ease;
+  }
+  
+  .user-icon:hover .user-circle-icon {
+    color: #ff5c35;
+  }
+  
+  /* Add a subtle animation for the menu appearance */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes fadeInUp {
+      from {
+          opacity: 0;
+          transform: translateY(20px);
+      }
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  }
+  
+  .QuizList .quizCards {
+      animation: fadeInUp 0.6s ease-out forwards;
+      animation-delay: calc(var(--card-index, 0) * 0.1s);
+  }
+
+  /* Container positioning and styling */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    margin-top: 100px; /* Space for fixed navbar */
+    margin-bottom: 40px;
+    width: 95%;
+  }
+
+  /* Form styling */
+  .form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  /* Input fields styling */
+  input[type="text"],
+  input[type="url"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    color: #333;
+  }
+
+  /* Input focus states */
+  input[type="text"]:focus,
+  input[type="url"]:focus,
+  input[type="email"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #ff5c35;
+    box-shadow: 0 0 0 3px rgba(255, 92, 53, 0.1);
+    outline: none;
+  }
+
+  /* Select dropdown styling */
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid #e1e1e1;
+    transition: all 0.3s ease;
+  }
+
+  select:hover {
+    border-color: #d1d1d1;
+  }
+
+  select:focus {
+    border-color: #ff5c35;
+    box-shadow: 0 0 0 3px rgba(255, 92, 53, 0.1);
+    outline: none;
+  }
+
+  /* Buttons styling */
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 120px;
+  }
+
+  .btn-primary {
+    background-color: #ff5c35;
+    color: white;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #e64a2e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 92, 53, 0.2);
+  }
+
+  .btn-secondary {
+    background-color: #f3f4f7;
+    color: #333;
+    border: 2px solid #e1e1e1;
+  }
+
+  .btn-secondary:hover {
+    background-color: #e6e7e9;
+    border-color: #d1d1d1;
+    transform: translateY(-1px);
+  }
+
+  /* Question section styling */
+  .question {
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #e1e1e1;
+    transition: all 0.3s ease;
+  }
+
+  .question:hover {
+    border-color: #ff5c35;
+    box-shadow: 0 2px 8px rgba(255, 92, 53, 0.1);
+  }
+
+  /* Answer group styling */
+  .answer-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+
+  .answer-group:hover {
+    background-color: #f0f0f0;
+  }
+
+  .answer-group input[type="text"] {
+    flex-grow: 1;
+    margin-right: 1rem;
+  }
+
+  /* Radio button styling */
+  .answer-group input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e1e1e1;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .answer-group input[type="radio"]:checked {
+    border-color: #ff5c35;
+    background-color: #ff5c35;
+  }
+
+  .answer-group input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: white;
+  }
+
+  /* Remove question button */
+  .remove-question {
+    background-color: #ff5c35;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+  }
+
+  .remove-question:hover {
+    background-color: #e64a2e;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255, 92, 53, 0.2);
+  }
+
+  /* Headings */
+  h1 {
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .container {
+      padding: 1.5rem;
+      margin-top: 80px;
+      width: 95%;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+
+    .answer-group {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .answer-group input[type="text"] {
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .question {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      width: 100%;
+      margin: 70px 0 0 0;
+      border-radius: 0;
+      padding: 1rem;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="email"],
+    select,
+    textarea {
+      padding: 0.2rem;
+      padding-left: 0.5rem;
+      height: 50.59px;
+    }
+  }
+
+  /* Add styles for radio button labels */
+  .answer-group {
+    position: relative;
+  }
+
+  .answer-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  @media (hover: none) {
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .remove-question:hover {
+      background-color: initial;
+    }
+    
+    .btn-primary:active,
+    .btn-secondary:active,
+    .remove-question:active {
+      transform: scale(0.98);
+    }
+  }
+
+  /* Improve touch targets on mobile */
+  @media (max-width: 768px) {
+    input[type="radio"] {
+      min-width: 20px;
+      min-height: 20px;
+    }
+
+    select {
+      height: 50.59px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .remove-question {
+      min-height: 44px;
+    }
+  }
+
+  .nav-link.active {
+    position: relative;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: #ff5c35;
+  }

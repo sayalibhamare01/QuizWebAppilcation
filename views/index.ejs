@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128&family=Libre+Barcode+39&family=Noto+Sans+JP:wght@100..900&family=Oswald:wght@200..700&family=Yatra+One&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/homepage.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Code Quiz</title>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo-container">
+                <span class="brand-name">Codingal</span>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/quizzes" class="nav-link">Quizzes</a>
+                </li>
+                <% if (isAuthenticated) { %>
+                    <li class="nav-item create-quiz-link">
+                        <a href="/createquizz" class="nav-link">Create Quiz</a>
+                    </li>
+                    <% } %>
+            </ul>
+        </div>
+
+
+        <div class="nav-right">
+            <button class="mobile-menu-btn" aria-label="Toggle mobile menu">☰</button>
+            <% if (!isAuthenticated) { %>
+                <div class="auth-buttons">
+                    <button class="btn btn-login" id="btn-login">Login</button>
+                    <button class="btn btn-SignUp" id="btn-signup">SignUp</button>
+                </div>
+                <% } else { %>
+                    <div class="user-icon" id="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="user-circle-icon">
+                            <path d="M18 20a6 6 0 0 0-12 0"></path>
+                            <circle cx="12" cy="10" r="4"></circle>
+                            <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        <div id="user-menu" class="user-menu">
+                            <a href="" class="user-menu-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span class="user-email">
+                                    <%= user.name %>
+                                </span>
+                            </a>
+                            <a href="/accountSettings" class="user-menu-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path
+                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                                    </path>
+                                </svg>
+                                Account Settings
+                            </a>
+                            <a href="/userQuizzes" class="user-menu-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                Your Quizzes
+                            </a>
+                            <a href="#" id="logout-link" class="user-menu-item logout">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                    <% } %>
+        </div>
+    </nav>
+
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo-container">
+                <span class="brand-name">Codingal</span>
+            </div>
+            <button class="close-btn" aria-label="Close mobile menu">×</button>
+        </div>
+
+        <div class="mobile-nav-links">
+            <a href="/" class="mobile-nav-link">Home</a>
+            <a href="/quizzes" class="mobile-nav-link">Quizzes</a>
+            <a href="/blog" class="mobile-nav-link">Blog</a>
+            <% if (isAuthenticated) { %>
+                <a href="/createquizz" class="mobile-nav-link create-quiz-link">Create Quiz</a>
+                <% } %>
+        </div>
+        <% if (!isAuthenticated) { %>
+            <div class="mobile-buttons">
+                <button class="btn-Login" id="btn-mobile-login">Login</button>
+                <button class="btn-mobile-SignUp" id="btn-mobile-signup">SignUp</button>
+            </div>
+            <% } else { %>
+                <div class="mobile-user-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="user-circle-icon">
+                        <path d="M18 20a6 6 0 0 0-12 0"></path>
+                        <circle cx="12" cy="10" r="4"></circle>
+                        <circle cx="12" cy="12" r="10"></circle>
+                    </svg>
+                    <span>
+                        <%= user.name %>
+                    </span>
+                </div>
+                <div class="mobile-nav-links">
+                    <a href="/accountSettings" class="mobile-nav-link">Account Settings</a>
+                    <a href="/userQuizzes" class="mobile-nav-link">Your Quizzes</a>
+                    <a href="/blog" class="mobile-nav-link">Your Profile</a>
+                </div>
+                <div class="mobile-buttons">
+                    <button class="btn-mobile-SignUp" id="btn-logout">Logout</button>
+                </div>
+                <% } %>
+
+    </div>
+
+    <div class="page-content">
+        <div class="controls-container">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search quizzes...">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            
+            <div class="filter-container">
+                <select id="languageFilter">
+                    <option value="">All Languages</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Python">Python</option>
+                    <option value="Java">Java</option>
+                    <option value="C++">C++</option>
+                    <option value="Ruby">Ruby</option>
+                    <option value="Kotlin">Kotlin</option>
+                    <option value="React">React</option>
+                    <option value="HTML">HTML</option>
+                    <option value="CSS">CSS</option>
+                    <option value="SQL">SQL</option>
+                    <option value="PHP">PHP</option>
+                    <option value="C#">C#</option>
+                </select>
+            </div>
+            
+            <div class="sort-container">
+                <select id="sortBy">
+                    <option value="newest">Newest</option>
+                    <option value="likes">Most Liked</option>
+                    <option value="plays">Most Played</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="QuizList">
+            <% if (quizzes && quizzes.length> 0) { %>
+                <% quizzes.forEach(quiz=> { %>
+                    <div class="quizCards">
+                        <div class="topSection">
+                            <img src="<%= quiz.imageurl %>" alt="<%= quiz.title %>">
+                            <div class="like-container">
+                                <button class="heart-btn <%= quiz.hasLiked ? 'active' : '' %>" 
+                                        data-quiz-id="<%= quiz._id %>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
+                                         fill="<%= quiz.hasLiked ? 'currentColor' : 'none' %>" 
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                         stroke-linejoin="round">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                <span class="like-count"><%= quiz.likes || 0 %></span>
+                            </div>
+                        </div>
+                        <div class="bottomSection">
+                            <h2>
+                                <%= quiz.title %>
+                            </h2>
+                            <p>Q: <%= quiz.numQuestions %>
+                            </p>
+                            <p>Plays: <%= quiz.plays %>
+                            </p>
+                            <p>Language: <%= quiz.language %></p>
+                            <p>Creator: <%= quiz.creator %>
+                            </p>
+                            <div>
+                                <%= quiz.difficulty %>
+                            </div>
+                            <button class="play-quiz-btn" data-title="<%= quiz.title %>">
+                                Play now
+                            </button>
+                        </div>
+                    </div>
+                    <% }); %>
+                    <% } else { %>
+                        <p class="no-quizzes-message">No quizzes available at the moment.</p>
+                        <% } %>
+        </div>
+    </div>
+
+    <script>
+        const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+        const mobileMenu = document.querySelector(".mobile-menu");
+        const closeBtn = document.querySelector(".close-btn");
+        const userIcon = document.getElementById("user-icon");
+        const userMenu = document.getElementById("user-menu");
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle("active");
+            document.body.style.overflow = mobileMenu.classList.contains("active") ? "hidden" : "";
+        }
+
+        mobileMenuBtn.addEventListener("click", toggleMobileMenu);
+        closeBtn.addEventListener("click", toggleMobileMenu);
+
+        // Close mobile menu when clicking outside
+        document.addEventListener("click", (e) => {
+            if (
+                mobileMenu.classList.contains("active") &&
+                !e.target.closest(".mobile-menu") &&
+                !e.target.closest(".mobile-menu-btn")
+            ) {
+                toggleMobileMenu();
+            }
+        });
+
+        // Prevent menu from closing when clicking inside
+        mobileMenu.addEventListener("click", (e) => {
+            e.stopPropagation();
+        });
+
+        <% if (isAuthenticated) { %>
+            // Toggle user menu
+            userIcon.addEventListener("click", (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle("active");
+            });
+
+            // Close user menu when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("#user-icon") && !e.target.closest("#user-menu")) {
+                    userMenu.classList.remove("active");
+                }
+            });
+
+            // Logout functionality
+            document.getElementById("logout-link").addEventListener("click", (e) => {
+                e.preventDefault();
+                handleLogout();
+            });
+
+            document.getElementById("btn-logout").addEventListener("click", (e) => {
+                e.preventDefault();
+                handleLogout();
+            });
+
+            function handleLogout() {
+                fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '/quizzes';
+                        }
+                    })
+                    .catch(error => console.error('Logout error:', error));
+            }
+        <% } else { %>
+            // Login button clicks
+            document.getElementById("btn-login").addEventListener("click", () => {
+                window.location.href = "/login";
+            });
+            document.getElementById("btn-mobile-login").addEventListener("click", () => {
+                window.location.href = "/login";
+            });
+
+            // Signup button clicks
+            document.getElementById("btn-signup").addEventListener("click", () => {
+                window.location.href = "/register";
+            });
+            document.getElementById("btn-mobile-signup").addEventListener("click", () => {
+                window.location.href = "/register";
+            });
+        <% } %>
+
+            // Add event listeners for "Play now" buttons
+            document.querySelectorAll(".play-quiz-btn").forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const quizTitle = event.target.dataset.title;
+                    console.log(quizTitle);
+                    if (quizTitle) {
+                        const sanitizedTitle = encodeURIComponent(quizTitle);
+                        console.log(sanitizedTitle);
+                        window.location.href = `/quizzes/${sanitizedTitle}/arena`;
+                    } else {
+                        console.error("Quiz title is missing!");
+                    }
+                });
+            });
+
+            // Add animation delay for staggered card appearance
+            document.querySelectorAll('.quizCards').forEach((card, index) => {
+                card.style.setProperty('--card-index', index);
+            });
+
+            lucide.createIcons();
+
+        // Add heart button functionality
+        document.querySelectorAll('.heart-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Check if user is authenticated
+                const isAuthenticated = <%= isAuthenticated %>;
+                if (!isAuthenticated) {
+                    alert('Please login and play the quiz to like it!');
+                    return;
+                }
+                
+                const quizId = button.dataset.quizId;
+                
+                try {
+                    const response = await fetch(`/quizzes/${quizId}/toggle-like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    const likeCount = button.parentElement.querySelector('.like-count');
+                    const svg = button.querySelector('svg');
+                    
+                    likeCount.textContent = data.likes;
+                    
+                    if (data.isLiked) {
+                        button.classList.add('active');
+                        svg.setAttribute('fill', 'currentColor');
+                    } else {
+                        button.classList.remove('active');
+                        svg.setAttribute('fill', 'none');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error updating like:', error);
+                    alert('An error occurred while updating the like status');
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const languageFilter = document.getElementById('languageFilter');
+            const sortBy = document.getElementById('sortBy');
+            const quizCards = document.querySelectorAll('.quizCards');
+            const quizList = document.querySelector('.QuizList');
+            
+            function filterQuizzes() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedLanguage = languageFilter.value.toLowerCase();
+                const sortValue = sortBy.value;
+                
+                // Convert NodeList to Array for sorting
+                let quizArray = Array.from(quizCards);
+                
+                // Filter quizzes
+                quizArray.forEach(quiz => {
+                    const title = quiz.querySelector('h2').textContent.toLowerCase();
+                    const language = quiz.querySelector('p:nth-child(4)').textContent.split(': ')[1].toLowerCase();
+                    
+                    const matchesSearch = title.includes(searchTerm);
+                    const matchesLanguage = selectedLanguage === '' || language === selectedLanguage;
+                    
+                    quiz.style.display = (matchesSearch && matchesLanguage) ? 'block' : 'none';
+                });
+                
+                // Sort quizzes
+                quizArray.sort((a, b) => {
+                    if (sortValue === 'likes') {
+                        const likesA = parseInt(a.querySelector('.like-count').textContent);
+                        const likesB = parseInt(b.querySelector('.like-count').textContent);
+                        return likesB - likesA;
+                    } else if (sortValue === 'plays') {
+                        const playsA = parseInt(a.querySelector('p:nth-child(3)').textContent.split(': ')[1]);
+                        const playsB = parseInt(b.querySelector('p:nth-child(3)').textContent.split(': ')[1]);
+                        return playsB - playsA;
+                    }
+                    return 0;
+                });
+                
+                // Clear and reappend only quiz cards
+                const visibleCards = quizArray.filter(card => card.style.display !== 'none');
+                quizList.innerHTML = '';
+                visibleCards.forEach((card, index) => {
+                    card.style.setProperty('--card-index', index);
+                    quizList.appendChild(card);
+                });
+                
+                // Show message if no results
+                if (visibleCards.length === 0) {
+                    const noResults = document.createElement('p');
+                    noResults.className = 'no-quizzes-message';
+                    noResults.textContent = 'No quizzes found matching your criteria.';
+                    quizList.appendChild(noResults);
+                }
+            }
+            
+            // Add event listeners
+            searchInput.addEventListener('input', filterQuizzes);
+            languageFilter.addEventListener('change', filterQuizzes);
+            sortBy.addEventListener('change', filterQuizzes);
+            
+            // Initial animation
+            quizCards.forEach((card, index) => {
+                card.style.setProperty('--card-index', index);
+            });
+        });
+    </script>
+</body>
+
+</html>
